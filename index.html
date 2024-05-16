@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Login </title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+
+
+    <div class="wrapper">
+        <span class="bg-animate"></span>
+        <span class="bg-animate2"></span>
+
+        <div class="form-box login">
+            <h2 class="animation" style="--i:0; --j:21;">Login</h2>
+            <form action="#">
+                <div class="input-box animation" style="--i:1; --j:22;">
+                    <input type="text" id="usernamelogin" required>
+                    <label>Username</label>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <div class="input-box animation" style="--i:2; --j:23;">
+                    <input type="password" id="loginpassword" required>
+                    <label>Password</label>
+                    <i class="bx bxs-lock-alt"
+                        onclick="togglePasswordVisibility('loginpassword', 'showLoginPassword')"></i>
+                </div>
+
+
+                <button type="submit" class="btn animation" id="loginbutton" style="--i:3; --j:24;">Login</button>
+                <div class="logreg-link animation" style="--i:4; --j:25;">
+                    <p>Don't have an account? <a href="#" class="register-link">Sign Up</a></p>
+                </div>
+            </form>
+        </div>
+        <div class="info-text login">
+            <h2 class="animation" style="--i:0; --j:20;"> Welcome Back to Dreamy Agenda!</h2>
+        </div>
+
+        <div class="form-box register">
+            <h2 class="animation" style="--i:17; --j:0;">Sign Up</h2>
+            <form action="#">
+                <div class="input-box animation" style="--i:18; --j:1;">
+                    <input type="text" id="username" required>
+                    <label>Username</label>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <div class="input-box animation" style="--i:19; --j:2;">
+                    <input type="email" id="email" required>
+                    <label>Email</label>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+
+                <div class="input-box animation" style="--i:20; --j:3;">
+                    <input type="password" id="password" required>
+                    <label>Password</label>
+                    <i class='bx bxs-lock-alt' onclick="togglePasswordVisibility('password', 'showPassword')"></i>
+                </div>
+
+
+
+                <button type="submit" class="btn animation" id="Signupbutton" style="--i:21; --j:4;">Sign Up</button>
+                <div class="logreg-link animation" style="--i:22; --j:5;">
+                    <p>Already have an account? <a href="#" class="login-link">Login</a></p>
+                </div>
+            </form>
+        </div>
+        <div class="info-text register">
+            <h2 class="animation" style="--i:17; --j:0;"> Welcome to Dreamy Agenda!</h2>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        function togglePasswordVisibility(passwordId, iconId) {
+            var passwordField = document.getElementById(passwordId);
+            var showPasswordIcon = document.getElementById(iconId);
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                showPasswordIcon.classList.remove("bxs-lock-alt");
+                showPasswordIcon.classList.add("bxs-lock-open-alt"); // Change the icon to an open lock
+            } else {
+                passwordField.type = "password";
+                showPasswordIcon.classList.remove("bxs-lock-open-alt");
+                showPasswordIcon.classList.add("bxs-lock-alt"); // Change the icon back to a closed lock
+            }
+        }
+    </script>
+
+
+
+</body>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDwVpltu6tMjLTNl9217wjN6V_BAJ3GLTE",
+        authDomain: "authentication-1ba6b.firebaseapp.com",
+        databaseURL: "https://authentication-1ba6b-default-rtdb.firebaseio.com",
+        projectId: "authentication-1ba6b",
+        storageBucket: "authentication-1ba6b.appspot.com",
+        messagingSenderId: "578759089375",
+        appId: "1:578759089375:web:d510afcfe049df35121d6a"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in
+            console.log("User is signed in:", user);
+            // Call renderCategories here if needed
+        } else {
+            // No user is signed in
+            console.log("No user signed in.");
+            // Handle this case appropriately
+        }
+    });
+
+    const Signupbutton = document.getElementById('Signupbutton'); 
+
+    Signupbutton.addEventListener('click', (e) => {
+        e.preventDefault(); 
+
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var username = document.getElementById('username').value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                const userId = user.uid;
+                return set(ref(database, 'users/' + userId), {
+                    username: username,
+                    email: email
+                });
+            })
+            .then(() => {
+                alert('User created successfully!');
+                location.reload();
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                console.error('Error signing up:', errorMessage);
+                alert(errorMessage);
+            });
+    });
+
+
+
+    loginbutton.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent form submission (default behavior)
+
+        var email = document.getElementById('usernamelogin').value;
+        var password = document.getElementById('loginpassword').value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+
+                const dt = new Date();
+                update(ref(database, 'users/' + user.uid), {
+                    last_login: dt,
+                });
+
+                alert('User logged in!');
+                window.location.href = 'indexmain.html';
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                alert(errorMessage);
+            });
+    });
+
+
+
+</script>
+
+</html>
